@@ -396,7 +396,7 @@ export function BirthdayExperience() {
           ) : (
             <motion.div className="finale" key="finale" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.4 }}>
               <Stars />
-              <div className="final-photo"><Portrait src={pPhoto} alt="Goreth, a minha Cinderela" /></div>
+              <div className="final-photo"><Portrait src={photo2} alt="Goreth, a minha Cinderela" /></div>
               <Reveal className="final-copy">
                 <p>Se chegaste até aqui... então já sabes.</p>
                 <h2>És a minha pessoa favorita.</h2>
