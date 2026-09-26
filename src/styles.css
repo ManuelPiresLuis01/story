@@ -63,7 +63,7 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; background: var(--background); }
+  html { scroll-behavior: smooth; scroll-snap-type: y proximity; background: var(--background); }
   body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); overflow-x: hidden; }
   button { font: inherit; }
   ::selection { background: color-mix(in oklab, var(--wine) 80%, transparent); color: var(--foreground); }
