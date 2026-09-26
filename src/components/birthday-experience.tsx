@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
-import { ArrowDown, ArrowRight, Heart, Music2, Pause, Play, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, Heart, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import pPhoto from "@/assets/p.jpg.asset.json";
-import photo1 from "@/assets/1.jpg.asset.json";
-import photo2 from "@/assets/2.jpg.asset.json";
-import photo3 from "@/assets/3.jpg.asset.json";
-import photo4 from "@/assets/4.jpg.asset.json";
-import photo5 from "@/assets/5.jpg.asset.json";
-import photo6 from "@/assets/6.jpg.asset.json";
-import photo7 from "@/assets/7.jpg.asset.json";
-import photo8 from "@/assets/8.jpg.asset.json";
-import photo9 from "@/assets/9.jpg.asset.json";
+
+const publicPhoto = (filename: string) => `/${filename}`;
+
+const pPhoto = publicPhoto("p.jpg");
+const photo1 = publicPhoto("1.jpg");
+const photo2 = publicPhoto("2.jpg");
+const photo3 = publicPhoto("3.jpg");
+const photo4 = publicPhoto("4.jpg");
+const photo5 = publicPhoto("5.jpg");
+const photo6 = publicPhoto("6.jpg");
+const photo7 = publicPhoto("7.jpg");
+const photo8 = publicPhoto("8.jpg");
+const photo9 = publicPhoto("9.jpg");
 
 const photos = [pPhoto, photo1, photo2, photo3, photo4, photo5, photo6, photo7, photo8, photo9];
 
@@ -92,11 +95,72 @@ function Chapter({
   className?: string;
   id?: string;
 }) {
+  const resolvedId = id ?? `chapter-${number}`;
+
   return (
-    <section id={id} data-chapter={number} className={`chapter ${className}`}>
+    <motion.section
+      id={resolvedId}
+      data-chapter={number}
+      className={`chapter ${className}`}
+      initial={{ opacity: 0, y: 26, scale: 0.985 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.28 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="chapter-index" aria-hidden="true">{String(number).padStart(2, "0")}</div>
       {children}
-    </section>
+    </motion.section>
+  );
+}
+
+function IntroSection({ onContinue }: { onContinue: () => void }) {
+  return (
+    <motion.section
+      id="intro-message"
+      className="chapter intro-message"
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="intro-glow" aria-hidden="true" />
+      <motion.div className="intro-copy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.2 }}>
+        <span className="eyebrow">Mensagem inicial</span>
+        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>Sei que adoras cartas.</motion.p>
+        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.7 }}>Desde os tempos mais remotos, cartas foram uma maneira de descrever o amor que sentimos por alguém.</motion.p>
+        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1.1 }}>Felizmente, os tempos mudaram e as pessoas já não têm o privilégio de encontrar grafias ruins escritas em papel. 😂</motion.p>
+        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1.5 }}>Mas, de uma forma melhorada, ainda assim decidi escrever uma carta para ti.</motion.p>
+        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 1.9 }}>Foi feita à mão e escrita no melhor caderno de todos:</motion.p>
+        <motion.p className="code-line" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 2.3 }}>o VSCode.</motion.p>
+        <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 2.7 }}>Espero que gostes.</motion.p>
+        <motion.button type="button" className="continue-indicator" onClick={onContinue} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 3.1 }}>
+          Continua ↓
+        </motion.button>
+      </motion.div>
+    </motion.section>
+  );
+}
+
+function ClosedLetterSection({ onOpen, isOpening }: { onOpen: () => void; isOpening: boolean }) {
+  return (
+    <motion.section
+      id="letter-closed"
+      className={`chapter letter-closed ${isOpening ? "is-opening" : ""}`}
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className={`letter-scene ${isOpening ? "opened" : ""}`}>
+        <div className="letter-shadow" aria-hidden="true" />
+        <div className="letter-envelope" onClick={onOpen} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onOpen(); } }}>
+          <div className="envelope-lip" aria-hidden="true" />
+          <div className="envelope-front" aria-hidden="true" />
+          <div className="letter-paper" aria-label="Carta aberta para ti">
+            <span>Para ti.</span>
+          </div>
+          <div className="letter-label">Clique aqui para abrir a minha carta</div>
+        </div>
+      </div>
+    </motion.section>
   );
 }
 
@@ -109,76 +173,13 @@ function Portrait({ src, alt, priority = false, className = "" }: { src: string;
   );
 }
 
-function MusicChapter({ onPlaying }: { onPlaying: (playing: boolean) => void }) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [arrived, setArrived] = useState(false);
-
-  const send = (command: "playVideo" | "pauseVideo") => {
-    iframeRef.current?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: command, args: [] }), "https://www.youtube.com");
-    const next = command === "playVideo";
-    setPlaying(next);
-    onPlaying(next);
-  };
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry) return;
-      if (entry.isIntersecting && entry.intersectionRatio > 0.62) {
-        setArrived(true);
-        window.setTimeout(() => send("playVideo"), 450);
-      } else if (playing) {
-        send("pauseVideo");
-      }
-    }, { threshold: [0.2, 0.62] });
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, [playing]);
-
-  return (
-    <section ref={sectionRef} data-chapter={5} className="chapter music-chapter">
-      <div className="chapter-index" aria-hidden="true">05</div>
-      <div className="music-grid">
-        <Reveal className="music-copy">
-          <span className="eyebrow"><Music2 /> Capítulo cinco</span>
-          <h2>A música que me fez perceber.</h2>
-          <p>Existe uma música que provavelmente nunca vais ouvir da mesma maneira depois de conhecer esta história.</p>
-          <div className="music-lines">
-            <Reveal delay={0.25}><p>Eu ouvia-a todos os dias.</p></Reveal>
-            <Reveal delay={0.55}><p>E havia uma razão.</p></Reveal>
-            <Reveal delay={0.9}><strong>Eu estava a apaixonar-me por ti.</strong></Reveal>
-          </div>
-          <Button variant="romance" size="story" onClick={() => send(playing ? "pauseVideo" : "playVideo")} aria-label={playing ? "Pausar a nossa música" : "Ouvir a nossa música"}>
-            {playing ? <Pause /> : <Play />} {playing ? "Pausar" : "Ouvir a nossa música"}
-          </Button>
-          {arrived && !playing && <p className="autoplay-note">Se o som não começou, toca para ouvir.</p>}
-        </Reveal>
-        <div className={`music-visual ${playing ? "is-playing" : ""}`}>
-          <Portrait src={photo3.url} alt="Goreth e Manuel juntos num evento" />
-          <div className="equalizer" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <i key={i} />)}</div>
-          <div className="music-caption"><span>JVKE</span><strong>her</strong></div>
-        </div>
-      </div>
-      <iframe
-        ref={iframeRef}
-        className="youtube-player"
-        title="JVKE — her"
-        src="https://www.youtube.com/embed/f5-IY_Ja1RM?enablejsapi=1&playsinline=1&rel=0&controls=0"
-        allow="autoplay; encrypted-media; picture-in-picture"
-      />
-    </section>
-  );
-}
-
 export function BirthdayExperience() {
   const [entered, setEntered] = useState(false);
+  const [storyPhase, setStoryPhase] = useState<"intro" | "letter" | "story">("intro");
+  const [letterOpening, setLetterOpening] = useState(false);
   const [chapter, setChapter] = useState(1);
   const [reason, setReason] = useState(0);
   const [surprise, setSurprise] = useState(false);
-  const [musicPlaying, setMusicPlaying] = useState(false);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -192,27 +193,55 @@ export function BirthdayExperience() {
     return () => observer.disconnect();
   }, [entered]);
 
+  const openLetter = () => {
+    setLetterOpening(true);
+
+    window.setTimeout(() => {
+      setStoryPhase("story");
+      setEntered(true);
+      window.setTimeout(() => document.getElementById("chapter-1")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }), 120);
+    }, 260);
+  };
+
+  const continueIntro = () => {
+    setStoryPhase("letter");
+    window.setTimeout(() => document.getElementById("letter-closed")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }), 100);
+  };
+
   const enterStory = () => {
     setEntered(true);
-    window.setTimeout(() => document.getElementById("your-day")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" }), 250);
+    setStoryPhase("story");
+    window.setTimeout(() => document.getElementById("chapter-1")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }), 100);
   };
 
   return (
     <main className={`experience ${entered ? "story-entered" : ""}`}>
       <Stars />
-      {entered && (
-        <div className="progress-rail" aria-label={`Capítulo ${chapter} de 12`}>
-          <span>{String(chapter).padStart(2, "0")}</span>
-          <div>{Array.from({ length: 12 }, (_, i) => <i key={i} className={chapter >= i + 1 ? "active" : ""} />)}</div>
-          <span>12</span>
-        </div>
-      )}
+      <iframe
+        className="youtube-player"
+        title="JVKE — her"
+        src="https://www.youtube.com/embed/f5-IY_Ja1RM?si=fmMsY2Eo3Si61nQI&enablejsapi=1&playsinline=1&rel=0&controls=0&autoplay=1&mute=0&loop=1&playlist=f5-IY_Ja1RM&start=0"
+        allow="autoplay; encrypted-media; picture-in-picture"
+      />
 
-      <Chapter number={1} className="opening">
+      {storyPhase === "intro" && <IntroSection onContinue={continueIntro} />}
+      {storyPhase === "letter" && <ClosedLetterSection onOpen={openLetter} isOpening={letterOpening} />}
+
+      {storyPhase === "story" && (
+        <>
+          {entered && (
+            <div className="progress-rail" aria-label={`Capítulo ${chapter} de 12`}>
+              <span>{String(chapter).padStart(2, "0")}</span>
+              <div>{Array.from({ length: 12 }, (_, i) => <i key={i} className={chapter >= i + 1 ? "active" : ""} />)}</div>
+              <span>12</span>
+            </div>
+          )}
+
+          <Chapter number={1} className="opening">
         <AnimatePresence mode="wait">
           {!entered ? (
             <motion.div className="opening-content" key="intro" exit={{ opacity: 0, scale: 1.03, filter: "blur(12px)" }} transition={{ duration: 0.8 }}>
-              <div className="opening-portrait"><Portrait src={pPhoto.url} alt="Goreth, a aniversariante" priority /></div>
+              <div className="opening-portrait"><Portrait src={pPhoto} alt="Goreth, a aniversariante" priority /></div>
               <div className="opening-words">
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2, delay: 0.5 }} className="goreth">Goreth...</motion.p>
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2, delay: 1.8 }}>Antes de continuares, quero que saibas uma coisa.</motion.p>
@@ -234,7 +263,7 @@ export function BirthdayExperience() {
       </Chapter>
 
       <Chapter number={2} id="your-day" className="day-chapter">
-        <div className="day-photo"><Portrait src={pPhoto.url} alt="Goreth sentada, num retrato sereno" /></div>
+        <div className="day-photo"><Portrait src={pPhoto} alt="Goreth sentada, num retrato sereno" /></div>
         <Reveal className="day-copy">
           <span className="date">27 de Setembro de 2026</span>
           <h2>Hoje é o dia <em>dela.</em></h2>
@@ -250,11 +279,11 @@ export function BirthdayExperience() {
           <Reveal delay={0.35}><p>...e ocupar tanto espaço dentro de mim.</p></Reveal>
           <Reveal delay={0.7}><h2>Até apareceres tu.</h2></Reveal>
         </div>
-        <Reveal delay={1} className="memory-arrives"><Portrait src={photo1.url} alt="Goreth e Manuel juntos no Luanda Event" /></Reveal>
+        <Reveal delay={1} className="memory-arrives"><Portrait src={photo1} alt="Goreth e Manuel juntos no Luanda Event" /></Reveal>
       </Chapter>
 
       <Chapter number={4} className="beginning-chapter">
-        <div className="beginning-photo"><Portrait src={photo2.url} alt="Goreth e Manuel numa selfie" /></div>
+        <div className="beginning-photo"><Portrait src={photo2} alt="Goreth e Manuel numa selfie" /></div>
         <div className="beginning-copy">
           <Reveal><span className="eyebrow">Quando começou</span><h2>Eu não sei dizer exatamente quando aconteceu.</h2></Reveal>
           <Reveal delay={0.25}><p>Não houve necessariamente um momento cinematográfico.</p><strong>Foi acontecendo.</strong></Reveal>
@@ -263,10 +292,8 @@ export function BirthdayExperience() {
         </div>
       </Chapter>
 
-      <MusicChapter onPlaying={setMusicPlaying} />
-
-      <Chapter number={6} className="chosen-chapter">
-        <div className="chosen-bg"><img src={photo4.url} alt="" loading="lazy" /></div>
+      <Chapter number={5} className="chosen-chapter">
+        <div className="chosen-bg"><img src={photo4} alt="" loading="lazy" /></div>
         <Reveal className="chosen-card">
           <span className="eyebrow">O dia em que te escolhi</span>
           <p>Talvez não saibas, mas existe algo bonito em eu estar novamente aqui, criando um website para ti.</p>
@@ -278,8 +305,8 @@ export function BirthdayExperience() {
       </Chapter>
 
       {memorySlides.map((item, index) => (
-        <Chapter number={7} className={`memory-slide memory-${index + 5}`} key={item.image.url}>
-          <div className="memory-full"><img src={item.image.url} alt={`Memória ${index + 5} de Goreth e Manuel`} loading="lazy" /></div>
+        <Chapter number={7} className={`memory-slide memory-${index + 5}`} key={item.image}>
+          <div className="memory-full"><img src={item.image} alt={`Memória ${index + 5} de Goreth e Manuel`} loading="lazy" /></div>
           <Reveal className="memory-label">
             <span>{String(index + 5).padStart(2, "0")} / 09</span>
             <h2>{item.kicker}</h2>
@@ -292,7 +319,7 @@ export function BirthdayExperience() {
       ))}
 
       <Chapter number={8} className="imperfect-chapter">
-        <div className="soft-bg"><img src={pPhoto.url} alt="" loading="lazy" /></div>
+        <div className="soft-bg"><img src={pPhoto} alt="" loading="lazy" /></div>
         <div className="imperfect-copy">
           <Reveal><h2>A nossa história não foi perfeita.</h2></Reveal>
           {["Tivemos momentos incríveis.", "Tivemos momentos difíceis.", "Já nos magoámos.", "Já tivemos medo de perder um ao outro."].map((line, i) => <Reveal delay={0.12 * i} key={line}><p>{line}</p></Reveal>)}
@@ -307,7 +334,7 @@ export function BirthdayExperience() {
       </Chapter>
 
       <Chapter number={9} className="reasons-chapter">
-        <div className="reasons-backdrop"><img src={pPhoto.url} alt="" loading="lazy" /></div>
+        <div className="reasons-backdrop"><img src={pPhoto} alt="" loading="lazy" /></div>
         <Reveal className="reasons-copy"><span>29 anos.</span><h2>29 razões.</h2><p>Uma de cada vez. Como mereces.</p></Reveal>
         <button className={`reason-card ${reason === 28 ? "final-reason" : ""}`} onClick={() => setReason((current) => current < 28 ? current + 1 : 0)} aria-label="Revelar a próxima razão">
           <span>{String(reason + 1).padStart(2, "0")}</span>
@@ -319,7 +346,7 @@ export function BirthdayExperience() {
       </Chapter>
 
       <Chapter number={10} className="letter-chapter">
-        <div className="letter-bg"><img src={pPhoto.url} alt="" loading="lazy" /></div>
+        <div className="letter-bg"><img src={pPhoto} alt="" loading="lazy" /></div>
         <Reveal className="letter">
           <span className="eyebrow">Agora, sem código. Sem site. Sem filtros.</span>
           <h2>Só eu a falar contigo.</h2>
@@ -360,7 +387,7 @@ export function BirthdayExperience() {
           ) : (
             <motion.div className="finale" key="finale" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.4 }}>
               <Stars />
-              <div className="final-photo"><Portrait src={pPhoto.url} alt="Goreth, a minha Cinderela" /></div>
+              <div className="final-photo"><Portrait src={pPhoto} alt="Goreth, a minha Cinderela" /></div>
               <Reveal className="final-copy">
                 <p>Se chegaste até aqui... então já sabes.</p>
                 <h2>És a minha pessoa favorita.</h2>
@@ -375,7 +402,9 @@ export function BirthdayExperience() {
           )}
         </AnimatePresence>
       </Chapter>
-      {musicPlaying && <div className="now-playing"><i /><span>JVKE — her</span></div>}
+
+        </>
+      )}
     </main>
   );
 }
