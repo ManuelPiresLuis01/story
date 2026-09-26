@@ -174,7 +174,7 @@ function Portrait({ src, alt, priority = false, className = "" }: { src: string;
 }
 
 export function BirthdayExperience() {
-  const musicIframeRef = useRef<HTMLIFrameElement>(null);
+  const musicAudioRef = useRef<HTMLAudioElement>(null);
   const [entered, setEntered] = useState(false);
   const [storyPhase, setStoryPhase] = useState<"intro" | "letter" | "story">("intro");
   const [letterOpening, setLetterOpening] = useState(false);
@@ -183,17 +183,17 @@ export function BirthdayExperience() {
   const [surprise, setSurprise] = useState(false);
   const reduced = useReducedMotion();
 
-  useEffect(() => {
-    const frame = musicIframeRef.current;
-    if (!frame?.contentWindow) return;
+  const startMusic = async () => {
+    const audio = musicAudioRef.current;
+    if (!audio) return;
 
-    const timer = window.setTimeout(() => {
-      frame.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "playVideo", args: [] }), "https://www.youtube.com");
-      frame.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "unMute", args: [] }), "https://www.youtube.com");
-    }, 1200);
-
-    return () => window.clearTimeout(timer);
-  }, []);
+    audio.volume = 1;
+    try {
+      await audio.play();
+    } catch (error) {
+      console.warn("Audio playback failed until user interaction:", error);
+    }
+  };
 
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-chapter]"));
@@ -217,6 +217,7 @@ export function BirthdayExperience() {
   };
 
   const continueIntro = () => {
+    startMusic();
     setStoryPhase("letter");
     window.setTimeout(() => document.getElementById("letter-closed")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }), 100);
   };
@@ -230,13 +231,7 @@ export function BirthdayExperience() {
   return (
     <main className={`experience ${entered ? "story-entered" : ""}`}>
       <Stars />
-      <iframe
-        ref={musicIframeRef}
-        className="youtube-player"
-        title="JVKE — her"
-        src="https://www.youtube.com/embed/f5-IY_Ja1RM?si=fmMsY2Eo3Si61nQI&enablejsapi=1&playsinline=1&rel=0&controls=0&autoplay=1&mute=1&loop=1&playlist=f5-IY_Ja1RM&start=0"
-        allow="autoplay; encrypted-media; picture-in-picture"
-      />
+      <audio ref={musicAudioRef} src="/musica.m4a" preload="auto" loop />
 
       {storyPhase === "intro" && <IntroSection onContinue={continueIntro} />}
       {storyPhase === "letter" && <ClosedLetterSection onOpen={openLetter} isOpening={letterOpening} />}
