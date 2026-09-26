@@ -73,7 +73,7 @@ function Reveal({ children, delay = 0, className = "" }: { children: React.React
       ref={ref}
       className={className}
       initial={reduced ? false : { opacity: 0, y: 28, filter: "blur(8px)" }}
-      animate={seen ? { opacity: 1, y: 0, filter: "blur(0px)" } : undefined}
+      animate={seen ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
       transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
